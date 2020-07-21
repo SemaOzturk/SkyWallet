@@ -5,7 +5,7 @@ using System.Text;
 namespace SkyWallet.Dal.Entities
 {
     [BsonCollection("User")]
-    public class UserDb  : Document
+    public class User  : Document
     {
         public string Username { get; set; }
         public string Password { get; set; }

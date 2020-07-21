@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SkyWallet.Application.AppEntities;
+using SkyWallet.Dal.Entities;
 
 namespace SkyWallet.Application.Services.Interfaces
 {

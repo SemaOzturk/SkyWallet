@@ -9,10 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SkyWallet.Application\SkyWallet.Application.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Entities\DbEntities\" />
   </ItemGroup>
 

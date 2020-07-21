@@ -9,9 +9,5 @@
     <ProjectReference Include="..\SkyWallet.Dal\SkyWallet.Dal.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 
 </Project>

@@ -14,4 +14,8 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SkyWallet.Dal\SkyWallet.Dal.csproj" />
+  </ItemGroup>
+
 </Project>

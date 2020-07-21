@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SkyWallet.Application
+namespace SkyWallet.Dal
 {
     public interface IMongoDbSettings
     {

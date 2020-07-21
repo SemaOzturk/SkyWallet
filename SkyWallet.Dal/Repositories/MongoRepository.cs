@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using SkyWallet.Application;
 
 namespace SkyWallet.Dal.IRepositories
 {

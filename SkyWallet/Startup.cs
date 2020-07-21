@@ -11,7 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using SkyWallet.Application;
+using SkyWallet.Application.Services;
+using SkyWallet.Application.Services.Interfaces;
+using SkyWallet.Dal;
 using SkyWallet.Dal.IRepositories;
 
 namespace SkyWallet
@@ -32,13 +36,15 @@ namespace SkyWallet
 
             services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
 
-            var mongoConnectionString = Configuration.GetConnectionString("ConnectionString");
-            var mongoDatabase = Configuration.GetConnectionString("DatabaseName");
+            //var mongoConnectionString = Configuration.GetSection("MongodbSettings:ConnectionString");
+            //var mongoDatabase = Configuration.GetConnectionString("DatabaseName");
 
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
+            MongoClient client=new MongoClient();
             services.AddScoped(typeof(IMongoRepository<>),typeof(MongoRepository<>));
+            services.AddScoped<IUserService, UserService>();
 
         }
 
