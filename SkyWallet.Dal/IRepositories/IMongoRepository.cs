@@ -8,6 +8,7 @@ namespace SkyWallet.Dal.IRepositories
 {
     public interface IMongoRepository<TDocument> where TDocument : IDocument
     {
+        IQueryable<TDocument> AsQueryable();
         IEnumerable<TDocument> FilterBy(Expression<Func<TDocument, bool>> filterExpression);
         TDocument GetByKey(string id);
         void Insert(TDocument document);

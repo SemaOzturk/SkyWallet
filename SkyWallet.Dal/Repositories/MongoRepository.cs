@@ -13,8 +13,21 @@ namespace SkyWallet.Dal.IRepositories
 
         public MongoRepository(IMongoDbSettings settings)
         {
-            var database=new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
+            var replace = settings.ConnectionString.Replace("<password>", settings.Pass)
+                .Replace("<dbname>", settings.DatabaseName);
+
+            var database=new MongoClient(replace).GetDatabase(settings.DatabaseName);
+            var servers = new List<MongoServerAddress>() { new MongoServerAddress(replace) };
+            var credential = MongoCredential.CreateCredential(settings.DatabaseName, settings.User, settings.Pass);
+            var mongoClientSettings = new MongoClientSettings()
+            {
+                ConnectionMode = ConnectionMode.Direct,
+                Credential = credential,
+                Servers = servers.ToArray()
+              //  ApplicationName = "NameOfApp",
+            };
             _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
+
         }
 
         private string GetCollectionName(Type documentType)
@@ -62,6 +75,11 @@ namespace SkyWallet.Dal.IRepositories
             var objectId=new ObjectId(id);
             var filter = Builders<TDocument>.Filter.Eq(doc => doc.Id,objectId);
             _collection.FindOneAndDelete(filter);
+        }
+
+        public IQueryable<TDocument> AsQueryable()
+        {
+            return _collection.AsQueryable();
         }
     }
 }

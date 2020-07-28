@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SkyWallet.Application.Entities;
 using SkyWallet.Dal.Entities;
 
 namespace SkyWallet.Application.Services.Interfaces
@@ -12,5 +13,6 @@ namespace SkyWallet.Application.Services.Interfaces
         User UpdateUer(User user);
         void Delete(string id);
         void GetByKey(string id);
+        AuthenticateResponse Authenticate(AuthenticateResponse authenticate);
     }
 }

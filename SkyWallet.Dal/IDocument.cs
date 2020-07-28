@@ -19,6 +19,7 @@ namespace SkyWallet.Dal
     {
         public ObjectId Id { get; set; }
         public DateTime CreateDate => Id.CreationTime;
+        public bool IsDeleted { get; set; }
     }
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class BsonCollectionAttribute : Attribute

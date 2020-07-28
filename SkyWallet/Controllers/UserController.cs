@@ -29,7 +29,7 @@ namespace SkyWallet.Controllers
                 LastName = "İstifa",
                 IsDeleted = false,
                 Password = "122345",
-                Username = "kjnn",
+                Username = "sky",
             });
             return  Ok(_userService.GetAll());
         }
