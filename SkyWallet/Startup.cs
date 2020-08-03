@@ -15,6 +15,7 @@ using MongoDB.Driver;
 using SkyWallet.Application;
 using SkyWallet.Application.Services;
 using SkyWallet.Application.Services.Interfaces;
+using SkyWallet.Application.Settings;
 using SkyWallet.Dal;
 using SkyWallet.Dal.IRepositories;
 
@@ -32,6 +33,7 @@ namespace SkyWallet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddControllers();
 
             services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
@@ -39,11 +41,14 @@ namespace SkyWallet
             //var mongoConnectionString = Configuration.GetSection("MongodbSettings:ConnectionString");
             //var mongoDatabase = Configuration.GetConnectionString("DatabaseName");
 
+            services.Configure<TokenSettings>(Configuration.GetSection("AppSettings"));
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
             MongoClient client=new MongoClient();
             services.AddScoped(typeof(IMongoRepository<>),typeof(MongoRepository<>));
+            services.AddScoped<IUserService, UserService>();
+
             services.AddScoped<IUserService, UserService>();
 
         }
@@ -59,6 +64,8 @@ namespace SkyWallet
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthorization();
 

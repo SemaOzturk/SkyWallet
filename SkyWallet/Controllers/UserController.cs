@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SkyWallet.Application.Services.Interfaces;
 using SkyWallet.Dal.Entities;
+using SkyWallet.Shared.Models;
 
 namespace SkyWallet.Controllers
 {
@@ -19,6 +21,18 @@ namespace SkyWallet.Controllers
         {
             _userService = userService;
         }
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(AuthenticateRequest authenticateModel)
+        {
+            var authenticateResponse = _userService.Authenticate(authenticateModel);
+            if (authenticateResponse == null)
+            {
+                return BadRequest(new {message = "Username or  password is incorrect"});
+            }
+
+            return Ok(authenticateResponse);
+        }
+      //  [Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {

@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using SkyWallet.Application.Entities;
@@ -20,10 +21,10 @@ namespace SkyWallet.Application.Services
         private readonly IMongoRepository<User> _userRepository;
         private MongoClient _client;
         private readonly TokenSettings _tokenSettings;  
-        public UserService(IMongoRepository<User> userRepository, TokenSettings tokenSettings)
+        public UserService(IMongoRepository<User> userRepository, IOptions<TokenSettings> tokenSettings)
         {
             _userRepository = userRepository;
-            _tokenSettings = tokenSettings;
+            _tokenSettings = tokenSettings.Value;
         }
 
         public IEnumerable<User> GetAll()
@@ -37,19 +38,20 @@ namespace SkyWallet.Application.Services
              return user;
         }
 
-        public User UpdateUer(User user)
+        public User UpdateUser(User user)
         {
-            throw new NotImplementedException();
+            _userRepository.Update(user);
+            return user;
         }
 
         public void Delete(string id)
         {
-            throw new NotImplementedException();
+            _userRepository.Delete(id);
         }
 
         public void GetByKey(string id)
         {
-            throw new NotImplementedException();
+            _userRepository.GetByKey(id);
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest authenticate)
@@ -61,7 +63,8 @@ namespace SkyWallet.Application.Services
                 return null;
             }
 
-            GenerateJwtToken(user);
+            var token = GenerateJwtToken(user);
+            return new AuthenticateResponse(user,token);
         }
 
         private string GenerateJwtToken(User user)
