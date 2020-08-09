@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SkyWallet.Application.Helper;
 using SkyWallet.Application.Services.Interfaces;
 using SkyWallet.Dal.Entities;
 using SkyWallet.Shared.Models;
@@ -32,19 +33,19 @@ namespace SkyWallet.Controllers
 
             return Ok(authenticateResponse);
         }
-      //  [Authorize]
-        [HttpGet]
+        [Authorizeatt]
+          [HttpGet]
         public IActionResult GetAll()
         {
 
-            _userService.CreateUser(new User()
-            {
-                FirstName = "Sema",
-                LastName = "İstifa",
-                IsDeleted = false,
-                Password = "122345",
-                Username = "sky",
-            });
+            //_userService.CreateUser(new User()
+            //{
+            //    FirstName = "Florya",
+            //    LastName = "Gloria",
+            //    IsDeleted = false,
+            //    Password = "852369",
+            //    Username = "coffee",
+            //});
             return  Ok(_userService.GetAll());
         }
     }

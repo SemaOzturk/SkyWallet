@@ -49,9 +49,10 @@ namespace SkyWallet.Application.Services
             _userRepository.Delete(id);
         }
 
-        public void GetByKey(string id)
+        public User GetByKey(string id)
         {
-            _userRepository.GetByKey(id);
+            var user = _userRepository.GetByKey(id);
+            return user;
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest authenticate)

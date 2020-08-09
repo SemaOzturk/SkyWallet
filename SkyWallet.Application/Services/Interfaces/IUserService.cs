@@ -13,7 +13,7 @@ namespace SkyWallet.Application.Services.Interfaces
         User CreateUser(User user);
         User UpdateUser(User user);
         void Delete(string id);
-        void GetByKey(string id);
+        User GetByKey(string id);
         AuthenticateResponse Authenticate(AuthenticateRequest authenticate);
     }
 }

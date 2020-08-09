@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SkyWallet.Application\SkyWallet.Application.csproj" />
     <ProjectReference Include="..\SkyWallet.Dal\SkyWallet.Dal.csproj" />
   </ItemGroup>
