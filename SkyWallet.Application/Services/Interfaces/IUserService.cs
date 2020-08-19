@@ -5,6 +5,7 @@ using SkyWallet.Application.Entities;
 using SkyWallet.Dal.Entities;
 using SkyWallet.Shared.Models;
 
+
 namespace SkyWallet.Application.Services.Interfaces
 {
     public interface IUserService
@@ -14,6 +15,6 @@ namespace SkyWallet.Application.Services.Interfaces
         User UpdateUser(User user);
         void Delete(string id);
         User GetByKey(string id);
-        AuthenticateResponse Authenticate(AuthenticateRequest authenticate);
+        AuthenticateResponse Authenticate(User user);
     }
 }

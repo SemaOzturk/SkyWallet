@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,11 +17,14 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using SkyWallet.Application;
+using SkyWallet.Application.Entities;
+using SkyWallet.Application.Helper;
 using SkyWallet.Application.Services;
 using SkyWallet.Application.Services.Interfaces;
-using SkyWallet.Application.Settings;
 using SkyWallet.Dal;
+using SkyWallet.Dal.Entities;
 using SkyWallet.Dal.IRepositories;
+using SkyWallet.Shared.Models;
 
 namespace SkyWallet
 {
@@ -41,35 +45,49 @@ namespace SkyWallet
             services.AddSwaggerGen();
 
             services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             //var mongoConnectionString = Configuration.GetSection("MongodbSettings:ConnectionString");
             //var mongoDatabase = Configuration.GetConnectionString("DatabaseName");
 
-            services.Configure<TokenSettings>(Configuration.GetSection("AppSettings"));
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
-            MongoClient client=new MongoClient();
-            services.AddScoped(typeof(IMongoRepository<>),typeof(MongoRepository<>));
+            MongoClient client = new MongoClient();
+            services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
             services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IUserService, UserService>();
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            //{
-            //    options.RequireHttpsMetadata = false;
-            //    options.SaveToken = true;
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = true,
-            //        ValidateAudience = true,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        ValidIssuer = Configuration["Jwt:Issuer"],
-            //        ValidAudience = Configuration["Jwt:Audience"],
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"])),
-            //        ClockSkew = TimeSpan.Zero
-            //    };
-            //});
+
+            var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+        
+
+        var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,18 +107,26 @@ namespace SkyWallet
             });
             app.UseHttpsRedirection();
 
-
             app.UseRouting();
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+        }
+    }
+
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<UserAuthenticateRequestModel, User>();
+            CreateMap<AuthenticateResponse, UserAuthenticateResponse>();
         }
     }
 }

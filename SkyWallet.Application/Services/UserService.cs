@@ -8,23 +8,24 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using SkyWallet.Application.Entities;
+using SkyWallet.Application.Helper;
 using SkyWallet.Application.Services.Interfaces;
-using SkyWallet.Application.Settings;
 using SkyWallet.Dal.Entities;
 using SkyWallet.Dal.IRepositories;
-using SkyWallet.Shared.Models;
+
 
 namespace SkyWallet.Application.Services
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly IMongoRepository<User> _userRepository;
-        private MongoClient _client;
-        private readonly TokenSettings _tokenSettings;  
-        public UserService(IMongoRepository<User> userRepository, IOptions<TokenSettings> tokenSettings)
+        // private MongoClient _client;
+        private readonly AppSettings _appSettings;
+
+        public UserService(IMongoRepository<User> userRepository, IOptions<AppSettings> appSettings)
         {
             _userRepository = userRepository;
-            _tokenSettings = tokenSettings.Value;
+            _appSettings = appSettings.Value;
         }
 
         public IEnumerable<User> GetAll()
@@ -34,8 +35,8 @@ namespace SkyWallet.Application.Services
 
         public User CreateUser(User user)
         {
-             _userRepository.Insert(user);
-             return user;
+            _userRepository.Insert(user);
+            return user;
         }
 
         public User UpdateUser(User user)
@@ -55,32 +56,42 @@ namespace SkyWallet.Application.Services
             return user;
         }
 
-        public AuthenticateResponse Authenticate(AuthenticateRequest authenticate)
+        public AuthenticateResponse Authenticate(User user)
         {
-            var user = _userRepository.AsQueryable().FirstOrDefault(x =>
-                x.Username == authenticate.UserName && x.Password == authenticate.Password);
-            if (user==null)
+            var loginUser = _userRepository.GetAll().FirstOrDefault(x=>x.Username==user.Username && x.Password==user.Password);
+            if (loginUser == null)
             {
                 return null;
             }
 
-            var token = GenerateJwtToken(user);
-            return new AuthenticateResponse(user,token);
+            (string token, DateTime expireDate) generateJwtToken;
+            generateJwtToken = GenerateJwtToken(user,loginUser.Id.ToString());
+            return new AuthenticateResponse()
+            {
+                FullName = loginUser.FirstName + " " + loginUser.LastName,
+                Token = generateJwtToken.token,
+                ExpiresDate = generateJwtToken.expireDate,
+                UserName = loginUser.Username
+            };
+
         }
 
-        private string GenerateJwtToken(User user)
+        private (string token,DateTime expireDate) GenerateJwtToken(User user,string id)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_tokenSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(new[] {new Claim("id", user.Id.ToString()),}),
-                Expires = DateTime.Now.AddDays(7),
+                Subject = new ClaimsIdentity(new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Name, id)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
+                    SecurityAlgorithms.HmacSha256Signature)
             };
-            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(securityToken);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return (tokenHandler.WriteToken(token),tokenDescriptor.Expires.Value);
         }
     }
 }

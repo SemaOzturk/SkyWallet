@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SkyWallet.Application.Settings
+namespace SkyWallet.Application.Helper
 {
-    public  class TokenSettings
+    public class AppSettings
     {
         public string Secret { get; set; }
     }

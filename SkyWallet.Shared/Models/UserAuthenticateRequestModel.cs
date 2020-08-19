@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using SkyWallet.Dal.Entities;
 
 namespace SkyWallet.Shared.Models
 {
-    public class AuthenticateRequest
+    public class UserAuthenticateRequestModel
     {
         [Required]
         public string UserName { get; set; }
