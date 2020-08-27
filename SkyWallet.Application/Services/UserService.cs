@@ -45,9 +45,17 @@ namespace SkyWallet.Application.Services
             return user;
         }
 
-        public void Delete(string id)
+        public void HardDelete(string id)
         {
             _userRepository.Delete(id);
+            
+        }
+
+        public void SoftDelete(string id)
+        {
+            var user=_userRepository.GetByKey(id);
+            user.IsDeleted = true;
+            _userRepository.Update(user);
         }
 
         public User GetByKey(string id)

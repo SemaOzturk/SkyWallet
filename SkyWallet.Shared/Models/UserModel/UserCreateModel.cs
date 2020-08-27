@@ -16,6 +16,11 @@ namespace SkyWallet.Shared.Models
     }
     public class UserUpdateModel
     {
-
+        public string Id { get; set; }
+        public string Username { get; set; }
+        [JsonIgnore]
+        public string Password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

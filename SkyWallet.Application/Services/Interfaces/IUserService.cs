@@ -8,13 +8,24 @@ using SkyWallet.Shared.Models;
 
 namespace SkyWallet.Application.Services.Interfaces
 {
-    public interface IUserService
+    public interface IUserService 
     {
         IEnumerable<User> GetAll();
         User CreateUser(User user);
         User UpdateUser(User user);
-        void Delete(string id);
+        void HardDelete(string id);
+        void SoftDelete(string id);
         User GetByKey(string id);
         AuthenticateResponse Authenticate(User user);
+    }
+
+    public interface IWalletService
+    {
+        IEnumerable<MoneyBox> GetAll();
+        MoneyBox CreateMoneyBox(MoneyBox moneyBox);
+        MoneyBox UpdateMoneyBox(MoneyBox moneyBox);
+        void HardDelete(string id);
+        void SoftDelete(string id);
+        MoneyBox GetByKey(string id);
     }
 }

@@ -32,10 +32,9 @@ namespace SkyWallet.Controllers
             return Ok(_mapper.Map<UserAuthenticateResponse>(authenticateResponse));
         }
         [HttpGet]
-        [Authorize]
+      //  [Authorize]
         public IActionResult GetAll()
         {
-
             //_userService.CreateUser(new User()
             //{
             //    FirstName = "Florya",
@@ -46,6 +45,39 @@ namespace SkyWallet.Controllers
             //});
             return  Ok(_userService.GetAll());
         }
-        public IActionResult CreateUser([FromBody])
+        [HttpPost]
+        public IActionResult CreateUser([FromBody] UserCreateModel userCreate)
+        {
+            return Ok(_userService.CreateUser(_mapper.Map<User>(userCreate)));
+        }
+
+        [HttpPut]
+        public IActionResult UpdateUser([FromBody] UserUpdateModel userUpdate)
+        {
+            return Ok(_userService.UpdateUser(_mapper.Map<User>(userUpdate)));
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteUser(string id)
+        {
+            try
+            {
+                _userService.SoftDelete(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest("an occur error when deleting the object");
+            }
+           
+        }
+
+        [HttpGet("{id}")]
+
+        public IActionResult GetByKey(string id)
+        {
+            var user = _userService.GetByKey(id);
+            return Ok(user);
+        }
     }
 }

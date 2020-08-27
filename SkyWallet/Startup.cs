@@ -127,6 +127,7 @@ namespace SkyWallet
         {
             CreateMap<UserAuthenticateRequestModel, User>();
             CreateMap<AuthenticateResponse, UserAuthenticateResponse>();
+            CreateMap<UserCreateModel, User>();
         }
     }
 }
